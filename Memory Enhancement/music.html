@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rhythm Recall | BrainBoost Games</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        /* Keep only game-specific styling here */
+          body { 
+             background: linear-gradient(135deg, #63ff63, #4c4caa);
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        
+          }
+
+        .blocks-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .game-title{
+            text-decoration: underline;
+        }
+
+        .blocks-row {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .block {
+            width: 150px;
+            height: 150px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .block1 {
+            background-color: rgba(184, 24, 24, 0.1);
+            border: 2px solid #FF5353;
+        }
+
+        .block2 {
+            background-color: rgba(255, 196, 41, 0.1);
+            border: 2px solid #FFC429;
+        }
+
+        .block3 {
+            background-color: rgba(89, 128, 193, 0.1);
+            border: 2px solid #5980C1;
+        }
+
+        .block4 {
+            background-color: rgba(251, 233, 183, 0.1);
+            border: 2px solid #FBE9B7;
+        }
+
+        .block.active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .block1.active {
+            background-color: #f80404;
+            color: white;
+        }
+
+        .block2.active {
+            background-color: #FFC429;
+            color: white;
+        }
+
+        .block3.active {
+            background-color: #5980C1;
+            color: white;
+        }
+
+        .block4.active {
+            background-color: #FBE9B7;
+            color: #333;
+        }
+
+        .input-status {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .status-circle {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #ccc;
+        }
+
+        .status-circle.correct {
+            background-color: #2ecc71;
+        }
+
+        .status-circle.wrong {
+            background-color: #e74c3c;
+        }
+
+        .game-status {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 18px;
+            color: #3498db;
+            min-height: 27px;
+        }
+
+        .start-btn {
+             background: linear-gradient(135deg, #63d3ff, #6a6afc);
+            color: white;
+            border: 7px; /* This looks like a typo, should probably be 'border: none;' or 'border-width: 7px;' */
+            text-align: center;
+            padding: 12px 24px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            margin-bottom: 350px;
+            transition: background-color 0.3s;
+        }
+
+        .start-btn:hover {
+            background-color: #27ae60;
+        }
+
+        .game-header {
+            color: #fafafa;
+        }
+
+        .start-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+
+        .game-area {
+            display: none; /* Initially hidden until game starts */
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <h1><i class="fas fa-headphones"></i> Rhythm Recall</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href='index.html'>Home</a></li>
+                <li><a href='memory.html'>Memory</a></li>
+                <li><a class='active' href='music.html'>Music</a></li>
+                <li><a href="math.html">Math</a></li>
+                <li><a href='about.html'>About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="game-page">
+        <div class="game-header">
+            <h1 class="game-title">Memory Blocks Challenge</h1>
+        </div>
+
+        <div class="game-header">
+            <h2>Memorize the sequence of flashing blocks and repeat it. The sequence gets longer each level!</h2>
+            <button id="start-btn" class="start-btn">Start Game</button>
+            <div class="game-area" id="game-area">
+                <div class="stats-bar">
+                    <div class="score">Level: <span id="level-count">1</span></div>
+                    <div class="timer">Sequence: <span id="sequence-length">4</span></div>
+                </div>
+
+                <div class="memory-game">
+                    <div class="game-status" id="game-status">Watch the sequence...</div>
+
+                    <div class="blocks-container">
+                        <div class="blocks-row">
+                            <div class="block block1" id="block1">1</div>
+                            <div class="block block2" id="block2">2</div>
+                        </div>
+                        <div class="blocks-row">
+                            <div class="block block3" id="block3">3</div>
+                            <div class="block block4" id="block4">4</div>
+                        </div>
+                    </div>
+
+                    <div class="input-status" id="input-status"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 Memory Enhancement Games. All rights reserved.</p>
+        </div>
+    </footer>
+
+   
+
+    <script>
+        // Blocks object handles the visual and audio feedback of the blocks
+        var Blocks = function (blockAssign, setAssign) {
+            this.allOn = false; // Flag to track if all blocks are lit up
+            this.blocks = blockAssign.map((d, i) =>
+            ({
+                name: d.name,
+                el: document.getElementById(d.id), // DOM element for the block
+                audio: this.getAudioObject(d.pitch) // Audio object for the block's sound
+            })
+            );
+            this.soundSets = setAssign.map((d, i) =>
+            ({
+                name: d.name,
+                sets: d.sets.map((pitch) => this.getAudioObject(pitch)) // Array of audio objects for success/fail sounds
+            })
+            );
+        };
+
+        // Flashes a single block and plays its sound
+        Blocks.prototype.flash = function (note) {
+            let block = this.blocks.find(d => d.name == note);
+            if (block) {
+                block.audio.currentTime = 0; // Rewind audio to start
+                block.audio.play();
+                block.el.classList.add("active"); // Add active class for visual flash
+                setTimeout(() => {
+                    if (this.allOn == false) { // Only remove class if not all blocks are supposed to be on
+                        block.el.classList.remove("active");
+                    }
+                }, 100);
+            }
+        };
+
+        // Lights up all blocks
+        Blocks.prototype.turnOnAll = function (note) {
+            this.allOn = true;
+            this.blocks.forEach(d => {
+                d.el.classList.add("active");
+            });
+        };
+
+        // Turns off all blocks
+        Blocks.prototype.turnOffAll = function (note) {
+            this.allOn = false;
+            this.blocks.forEach(d => {
+                d.el.classList.remove("active");
+            });
+        };
+
+        // Creates and returns an audio object for a given pitch
+        Blocks.prototype.getAudioObject = function (pitch) {
+            var audio = new Audio("https://awiclass.monoame.com/pianosound/set/" + pitch + ".wav");
+            audio.setAttribute("preload", "auto"); // Preload audio for faster playback
+            return audio;
+        };
+
+        // Plays a sequence of sounds (e.g., for correct/wrong answers)
+        Blocks.prototype.playSet = function (type) {
+            this.soundSets
+                .find(set => set.name == type).sets
+                .forEach(o => {
+                    o.currentTime = 0; // Rewind audio to start
+                    o.play();
+                });
+        };
+
+        //--------------------------------
+        //          Game Object
+        //--------------------------------
+        var Game = function () {
+            // Define blocks and sound sets for the game
+            this.blocks = new Blocks(
+                [{
+                    id: "block1",
+                    name: "1",
+                    pitch: "1"
+                }, {
+                    id: "block2",
+                    name: "2",
+                    pitch: "2"
+                }, {
+                    id: "block3",
+                    name: "3",
+                    pitch: "3"
+                }, {
+                    id: "block4",
+                    name: "4",
+                    pitch: "4"
+                }], [{
+                    name: "correct",
+                    sets: [1, 3, 5, 8]
+                }, // Pitches for correct sequence
+                {
+                    name: "wrong",
+                    sets: [2, 4, 5.5, 7]
+                } // Pitches for wrong sequence
+            ]
+            );
+            // Default levels (will be overwritten by AJAX if successful)
+            this.levels = [
+                "1234",
+                "12324",
+                "231234",
+                "41233412",
+                "41323134132",
+                "2342341231231423414232"
+            ];
+            let _this = this;
+            // Download levels from API
+            $.ajax({
+                url: "https://2017.awiclass.monoame.com/api/demo/memorygame/leveldata",
+                success: function (res) {
+                    _this.levels = res; // Update levels with data from API
+                },
+                error: function (xhr, status, error) {
+                    console.error("Failed to load levels from API:", status, error);
+                    // Fallback to default levels if API fails
+                }
+            });
+            // Game state variables
+            this.currentLevel = 0;
+            this.playInterval = 400; // Time between block flashes
+            this.mode = "waiting"; // Current game mode: "waiting", "gamePlay", "userInput", "reset"
+        };
+
+        // Starts the current level
+        Game.prototype.startLevel = function () {
+            this.showMessage("Level " + (this.currentLevel + 1)); // Display current level number (1-indexed)
+            document.getElementById('level-count').textContent = this.currentLevel + 1;
+            document.getElementById('sequence-length').textContent = this.levels[this.currentLevel].length;
+            this.startGame(this.levels[this.currentLevel]); // Start game with the sequence for the current level
+        };
+
+        // Displays messages on the screen
+        Game.prototype.showMessage = function (message) {
+            document.getElementById('game-status').textContent = message;
+        };
+
+        // Starts the game sequence playback
+        Game.prototype.startGame = function (answer) {
+            this.mode = "gamePlay"; // Set mode to game playback
+            this.answer = answer; // Store the correct sequence for the level
+            let notes = this.answer.split(""); // Split the answer string into individual notes
+            let _this = this;
+
+            this.showStatus(""); // Clear previous status
+            this.blocks.turnOffAll(); // Ensure all blocks are off before playing sequence
+
+            // Set up a timer to play each note in the sequence
+            this.timer = setInterval(function () {
+                let char = notes.shift(); // Get the next note
+                if (!notes.length) { // If all notes have been played
+                    clearInterval(_this.timer); // Stop the timer
+                    _this.startUserInput(); // Switch to user input mode
+                }
+                _this.playNote(char); // Play the current note
+            }, this.playInterval);
+        };
+
+        // Plays a single note (flashes block and plays sound)
+        Game.prototype.playNote = function (note) {
+            this.blocks.flash(note);
+        };
+
+        // Switches to user input mode
+        Game.prototype.startUserInput = function () {
+            this.userInput = ""; // Reset user input
+            this.mode = "userInput"; // Set mode to user input
+            this.showMessage("Your Turn! Repeat the sequence");
+        };
+
+        // Handles user block clicks
+        Game.prototype.userSendInput = function (inputChar) {
+            if (this.mode == "userInput") {
+                let tempString = this.userInput + inputChar; // Append new input to current user input
+                this.playNote(inputChar); // Play the sound for the clicked block
+                this.showStatus(tempString); // Update visual status based on current input
+
+                if (this.answer.indexOf(tempString) == 0) { // Check if current input matches the start of the answer
+                    if (this.answer == tempString) { // If the full answer is matched
+                        this.currentLevel += 1; // Advance to next level
+                        this.mode = "waiting"; // Set mode to waiting before next level starts
+                        setTimeout(() => {
+                            // If there are more levels, start the next one. Otherwise, game over.
+                            if (this.currentLevel < this.levels.length) {
+                                this.startLevel();
+                            } else {
+                                this.showMessage("Game Over! You won!");
+                                document.getElementById('level-count').textContent = "WIN!";
+                                this.blocks.turnOnAll();
+                                this.blocks.playSet("correct");
+                                // Show restart button
+                                document.getElementById('start-btn').textContent = "Play Again";
+                                document.getElementById('start-btn').disabled = false;
+                                document.getElementById('start-btn').style.display = 'block';
+                            }
+                        }, 1000);
+                    }
+                    this.userInput = tempString; // Update user input
+                } else { // User input is wrong
+                    this.currentLevel = 0; // Reset to level 1
+                    this.mode = "reset"; // Set mode to reset
+                    this.showMessage("Wrong! Starting over...");
+                    setTimeout(() => {
+                        this.startLevel(); // Restart game from level 1
+                    }, 1000);
+                }
+            }
+        };
+
+        // Displays visual status of user input (correct/wrong circles)
+        Game.prototype.showStatus = function (tempString) {
+            let inputStatus = document.getElementById('input-status');
+            inputStatus.innerHTML = ""; // Clear previous circles
+
+            this.answer.split("").forEach((d, i) => {
+                var circle = document.createElement("div");
+                circle.className = "status-circle";
+                if (i < tempString.length) { // Mark circles as correct for matched parts
+                    if (this.answer[i] == tempString[i]) {
+                        circle.classList.add("correct");
+                    } else {
+                        circle.classList.add("wrong");
+                    }
+                }
+                inputStatus.appendChild(circle);
+            });
+
+            if (tempString == this.answer) { // If the full answer is correct
+                this.showMessage("Correct!");
+                setTimeout(() => {
+                    this.blocks.turnOnAll(); // Light up all blocks
+                    this.blocks.playSet("correct"); // Play correct sound sequence
+                }, 500);
+            }
+
+            if (tempString == "") { // If input is reset
+                this.blocks.turnOffAll(); // Turn off all blocks
+            }
+
+            if (this.answer.indexOf(tempString) != 0) { // If the current input is definitively wrong
+                this.showMessage("Wrong! Try again...");
+                this.blocks.turnOnAll(); // Light up all blocks
+                this.blocks.playSet("wrong"); // Play wrong sound sequence
+            }
+        };
+
+        //--------------------
+        //      Initialize Game
+        var game = new Game();
+
+        // Set up event listeners when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get all block elements and add click handlers
+            document.getElementById('block1').addEventListener('click', function () {
+                game.userSendInput('1');
+            });
+            document.getElementById('block2').addEventListener('click', function () {
+                game.userSendInput('2');
+            });
+            document.getElementById('block3').addEventListener('click', function () {
+                game.userSendInput('3');
+            });
+            document.getElementById('block4').addEventListener('click', function () {
+                game.userSendInput('4');
+            });
+
+            // Start button functionality
+            const startBtn = document.getElementById('start-btn');
+            const gameArea = document.getElementById('game-area');
+
+            startBtn.addEventListener('click', function () {
+                // Hide start button and show game area
+                startBtn.style.display = 'none';
+                gameArea.style.display = 'block';
+
+                // Reset game state
+                game.currentLevel = 0;
+                game.mode = "waiting";
+
+                // Start the game
+                game.startLevel();
+            });
+        });
+    </script>
+</body>
+
+</html>

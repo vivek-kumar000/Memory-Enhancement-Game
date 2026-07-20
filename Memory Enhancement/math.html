@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>2048 Game with Leaderboard, Themes & Pause</title>
+    <!-- <link rel="stylesheet" href="style.css" /> -->
+    <style>
+        :root {
+      --primary: #6351eb;
+      --secondary: #514c9b;
+      --dark: #2d3436;
+      --light: #f5f6fa;
+      --accent: #00b894;
+      --text: #2d3436;
+      --text-light: #636e72;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+
+    header {
+      background-color: #333;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(243, 12, 12, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    
+    .logo h1 {
+      color: var(--primary);
+      font-size: 1.8rem;
+      
+      font-weight: 700;
+      margin: 0;
+      background: linear-gradient(to right, var(--primary), var(--accent));-webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .logo i {
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+      margin: 0;
+      padding: 0;
+      text-decoration: underline;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      position: relative;
+    }
+    
+    nav ul li a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: var(--primary);
+      transition: width 0.3s ease;
+    }
+
+    nav ul li a:hover,
+    nav ul li a.active {
+      color: var(--primary);
+    }
+    
+    nav ul li a:hover::after,
+    nav ul li a.active::after {
+      width: 60%;
+    }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #63ff63, #4c4caa);
+            color: #333;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        
+
+       
+        h2{
+            color: white;
+        }
+       
+
+
+
+        #game-board {
+            display: grid;
+            gap: 5px;
+            justify-content: center;
+            background: linear-gradient(160deg, #02cc67 0%, #552c77 100%);
+            padding: 5px;
+            margin: 20px auto;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+
+
+        .tile {
+            width: 80px;
+            height: 80px;
+            background: #cdc1b4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 5px;
+            color: #333;
+        }
+
+        .tile[data-value="2"] {
+            background: #fded0b;
+            color: #0c0c0c;
+        }
+
+        .tile[data-value="4"] {
+            background: #5deb3a;
+            color: #776e65;
+        }
+
+        .tile[data-value="8"] {
+            background: #8a470d;
+            color: #f9f6f2;
+        }
+
+        .tile[data-value="16"] {
+            background: #5381c5;
+            color: #f9f6f2;
+        }
+
+        .tile[data-value="32"] {
+            background: #a31212;
+            color: #f9f6f2;
+        }
+
+        .tile[data-value="64"] {
+            background: #f65e3b;
+            color: #f9f6f2;
+        }
+
+        .tile[data-value="128"] {
+            background: #2fc3dd;
+            color: #f9f6f2;
+        }
+
+        .tile[data-value="256"] {
+            background: #08c98f;
+            color: #f9f6f2;
+        }
+
+        #game-over {
+            display: none;
+            margin-top: 2rem;
+            background-color: #fff8dc;
+            border: 3px solid #444;
+            padding: 20px 40px;
+            text-align: center;
+            border-radius: 12px;
+        }
+
+        #game-over button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #8f7a66;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        #game-over button:hover {
+            background-color: #776e65;
+        }
+        
+
+        /* Leaderboard styles */
+        #leaderboard {
+            max-width: 300px;
+            margin: 0 auto 20px;
+            text-align: left;
+        }
+
+        /* Themes */
+        /* Dark Mode */
+        body.dark {
+            background-color: #121212;
+            color: #eee;
+        }
+
+        body.dark #game-board {
+            background-color: #333;
+        }
+
+        body.dark .tile {
+            background-color: #555;
+            color: #eee;
+        }
+
+        body.dark .tile[data-value="2"] {
+            background-color: #bbb;
+            color: #222;
+        }
+
+        body.dark .tile[data-value="4"] {
+            background-color: #aaa;
+            color: #222;
+        }
+
+        body.dark .tile[data-value="8"] {
+            background-color: #f57c00;
+            color: white;
+        }
+
+        body.dark .tile[data-value="16"] {
+            background-color: #ef6c00;
+            color: white;
+        }
+
+        body.dark .tile[data-value="32"] {
+            background-color: #e65100;
+            color: white;
+        }
+
+        body.dark .tile[data-value="64"] {
+            background-color: #bf360c;
+            color: white;
+        }
+
+        body.dark .tile[data-value="128"] {
+            background-color: #fbc02d;
+            color: black;
+        }
+
+        body.dark .tile[data-value="256"] {
+            background-color: #f9a825;
+            color: black;
+        }
+
+        body.dark .tile[data-value="512"] {
+            background-color: #f57f17;
+            color: black;
+        }
+
+        body.dark .tile[data-value="1024"] {
+            background-color: #ffeb3b;
+            color: black;
+        }
+
+        body.dark .tile[data-value="2048"] {
+            background-color: #ffca28;
+            color: black;
+        }
+
+        /* Colorful Theme */
+        body.colorful {
+            background-color: #ffe0b2;
+            color: #3e2723;
+        }
+
+        body.colorful #game-board {
+            background-color: #ffcc80;
+        }
+
+        body.colorful .tile {
+            background-color: #ffb74d;
+            color: #3e2723;
+            font-weight: bold;
+        }
+
+        body.colorful .tile[data-value="2"] {
+            background-color: #fff3e0;
+            color: #6d4c41;
+        }
+
+        body.colorful .tile[data-value="4"] {
+            background-color: #ffe0b2;
+            color: #6d4c41;
+        }
+
+        body.colorful .tile[data-value="8"] {
+            background-color: #ffb74d;
+            color: #3e2723;
+        }
+
+        body.colorful .tile[data-value="16"] {
+            background-color: #ffa726;
+            color: #3e2723;
+        }
+
+        body.colorful .tile[data-value="32"] {
+            background-color: #fb8c00;
+            color: #3e2723;
+        }
+
+        body.colorful .tile[data-value="64"] {
+            background-color: #f57c00;
+            color: white;
+        }
+
+        body.colorful .tile[data-value="128"] {
+            background-color: #ef6c00;
+            color: white;
+        }
+
+        body.colorful .tile[data-value="256"] {
+            background-color: #e65100;
+            color: white;
+        }
+
+        body.colorful .tile[data-value="512"] {
+            background-color: #bf360c;
+            color: white;
+        }
+
+        body.colorful .tile[data-value="1024"] {
+            background-color: #fbc02d;
+            color: black;
+        }
+
+        body.colorful .tile[data-value="2048"] {
+            background-color: #f9a825;
+            color: black;
+        }
+        h1{
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">
+      <h1><i class="fas fa-th-large"></i> Number Merge</h1>
+    </div>
+
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="memory.html">Memory</a></li>
+        <li><a href='music.html'>Music</a></li>
+        <li><a class="active" href="math.html">Math</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </nav>
+  </header>
+
+
+    <h1>2048 Game</h1>
+
+    <label for="board-size">Choose Board Size:</label>
+    <select id="board-size" onchange="changeBoardSize()">
+        <option value="4" selected>4 x 4</option>
+        <option value="5">5 x 5</option>
+        <option value="6">6 x 6</option>
+    </select>
+
+    <label for="theme-select">Choose Theme:</label>
+    <select id="theme-select" onchange="changeTheme()">
+        <option value="light" selected>Light</option>
+        <option value="dark">Dark</option>
+        <option value="colorful">Colorful</option>
+    </select>
+
+    <h2>
+        Score: <span id="score">0</span> |
+        High Score: <span id="high-score">0</span> |
+        Moves: <span id="move-count">0</span>
+    </h2>
+
+
+    <button onclick="restartGame()" id="restart-btn">🔄 Restart Game</button>
+    <button onclick="togglePause()" id="pause-btn">⏸️ Pause</button>
+
+    <div id="game-board"></div>
+    <p>Use arrow keys to move the tiles.</p>
+    
+    <div id="game-over">
+        <h2>Game Over!</h2>
+        <button onclick="restartGame()">Restart</button>
+    </div>
+
+    <!-- Rules Modal -->
+    <div id="rules-modal">
+        <div class="modal-content">
+            <span onclick="closeRules()" class="close-btn">&times;</span>
+           
+           
+        
+    </div>
+    <footer>
+        <div class="footer-content">
+          <p>&copy; 2025 Memory Enhancement. All rights reserved.</p>
+        </div>
+      </footer>
+
+    <!-- Sounds -->
+    <audio id="move-sound" src="sounds/move.wav"></audio>
+    <audio id="win-sound" src="sounds/win.wav"></audio>
+    <audio id="gameover-sound" src="sounds/gameover.wav"></audio>
+
+    <script src="script.js"></script>
+    <script>
+        const board = document.getElementById("game-board");
+        const scoreDisplay = document.getElementById("score");
+        const highScoreDisplay = document.getElementById("high-score");
+        const moveCountDisplay = document.getElementById("move-count");
+        const gameOverDiv = document.getElementById("game-over");
+        const boardSizeSelect = document.getElementById("board-size");
+        const leaderboardEl = document.getElementById("leaderboard");
+        const themeSelect = document.getElementById("theme-select");
+        const pauseBtn = document.getElementById("pause-btn");
+
+        let boardSize = parseInt(boardSizeSelect.value);
+        let score = 0;
+        let highScoreKey = `highScore_${boardSize}`;
+        let highScore = localStorage.getItem(highScoreKey) || 0;
+        let moveCount = 0;
+        let hasWon = false;
+        let isPaused = false;
+
+        highScoreDisplay.textContent = highScore;
+
+        // Sounds
+        function playSound(id) {
+            const sound = document.getElementById(id);
+            if (sound && !isPaused) {
+                sound.currentTime = 0;
+                sound.play();
+            }
+        }
+
+        // Board setup
+        function createBoard() {
+            board.innerHTML = "";
+            board.style.gridTemplateColumns = `repeat(${boardSize}, 80px)`;
+            board.style.gridTemplateRows = `repeat(${boardSize}, 80px)`;
+            board.style.width = `${(boardSize * 80) + ((boardSize - 1) * 7)}px`;
+            for (let i = 0; i < boardSize * boardSize; i++) {
+                const tile = document.createElement("div");
+                tile.className = "tile";
+                tile.textContent = "";
+                tile.setAttribute("data-value", "0");
+                board.appendChild(tile);
+            }
+        }
+
+        function getValues() {
+            return [...board.children].map(t => parseInt(t.textContent) || 0)
+                .reduce((a, v, i) => { const r = Math.floor(i / boardSize); (a[r] = a[r] || []).push(v); return a; }, []);
+        }
+
+        function setValues(vals) {
+            [...board.children].forEach((t, i) => {
+                const v = vals[Math.floor(i / boardSize)][i % boardSize];
+                t.textContent = v || "";
+                t.setAttribute("data-value", v);
+            });
+            scoreDisplay.textContent = score;
+            moveCountDisplay.textContent = moveCount;
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem(highScoreKey, score);
+                highScoreDisplay.textContent = highScore;
+            }
+            saveGameState();
+        }
+
+        function addNumber() {
+            const empty = [...board.children].filter(t => !t.textContent);
+            if (!empty.length) return;
+            const tile = empty[Math.floor(Math.random() * empty.length)];
+            tile.textContent = Math.random() < 0.9 ? "2" : "4";
+            tile.setAttribute("data-value", tile.textContent);
+        }
+
+        function mergeRow(row, rev = false) {
+            if (rev) row = row.reverse();
+            row = row.filter(v => v);
+            for (let i = 0; i < row.length - 1; i++) {
+                if (row[i] === row[i + 1]) {
+                    row[i] *= 2;
+                    if (row[i] === 2048 && !hasWon) {
+                        playSound("win-sound");
+                        hasWon = true;
+                    }
+                    score += row[i];
+                    row[i + 1] = 0;
+                }
+            }
+            row = row.filter(v => v);
+            while (row.length < boardSize) row.push(0);
+            return rev ? row.reverse() : row;
+        }
+
+        function move(dir) {
+            if (isPaused) return;
+            const before = JSON.stringify(getValues());
+            let v = getValues();
+            if (dir === "left" || dir === "right") {
+                for (let i = 0; i < boardSize; i++) v[i] = mergeRow(v[i], dir === "right");
+            } else {
+                for (let c = 0; c < boardSize; c++) {
+                    let col = v.map(r => r[c]);
+                    col = mergeRow(col, dir === "down");
+                    for (let r = 0; r < boardSize; r++) v[r][c] = col[r];
+                }
+            }
+            if (JSON.stringify(v) !== before) {
+                playSound("move-sound");
+                moveCount++;
+                setValues(v);
+                addNumber();
+                if (isGameOver()) showGameOver();
+            }
+        }
+
+        function isGameOver() {
+            const v = getValues();
+            for (let i = 0; i < boardSize; i++) {
+                for (let j = 0; j < boardSize; j++) {
+                    if (v[i][j] === 0) return false;
+                    if (j < boardSize - 1 && v[i][j] === v[i][j + 1]) return false;
+                    if (i < boardSize - 1 && v[i][j] === v[i + 1][j]) return false;
+                }
+            }
+            return true;
+        }
+
+        function showGameOver() {
+            playSound("gameover-sound");
+            gameOverDiv.style.display = "block";
+            addToLeaderboard(score);
+            clearGameState();
+        }
+
+        function restartGame() {
+            score = 0;
+            moveCount = 0;
+            hasWon = false;
+            isPaused = false;
+            pauseBtn.textContent = "⏸️ Pause";
+            gameOverDiv.style.display = "none";
+            createBoard();
+            addNumber();
+            addNumber();
+            setValues(getValues());
+            clearGameState();
+        }
+
+        function changeBoardSize() {
+            boardSize = parseInt(boardSizeSelect.value);
+            highScoreKey = `highScore_${boardSize}`;
+            highScore = localStorage.getItem(highScoreKey) || 0;
+            highScoreDisplay.textContent = highScore;
+            restartGame();
+        }
+
+        function saveGameState() {
+            const state = {
+                boardSize: boardSize,
+                board: getValues(),
+                score: score,
+                moveCount: moveCount,
+                hasWon: hasWon,
+                isPaused: isPaused,
+                theme: themeSelect.value,
+            };
+            localStorage.setItem("2048gameState", JSON.stringify(state));
+        }
+
+        function loadGameState() {
+            const savedState = localStorage.getItem("2048gameState");
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                if (state.boardSize) {
+                    boardSize = state.boardSize;
+                    boardSizeSelect.value = boardSize;
+                    highScoreKey = `highScore_${boardSize}`;
+                    highScore = localStorage.getItem(highScoreKey) || 0;
+                    highScoreDisplay.textContent = highScore;
+                }
+                score = state.score || 0;
+                moveCount = state.moveCount || 0;
+                hasWon = state.hasWon || false;
+                isPaused = state.isPaused || false;
+                themeSelect.value = state.theme || "light";
+                applyTheme(themeSelect.value);
+                createBoard();
+                setValues(state.board || Array(boardSize).fill().map(() => Array(boardSize).fill(0)));
+                if (isPaused) pauseBtn.textContent = "▶️ Resume";
+            } else {
+                restartGame();
+            }
+        }
+
+        function clearGameState() {
+            localStorage.removeItem("2048gameState");
+        }
+
+        // Themes
+        function changeTheme() {
+            const theme = themeSelect.value;
+            applyTheme(theme);
+            saveGameState();
+        }
+
+        function applyTheme(theme) {
+            document.body.classList.remove("light", "dark", "colorful");
+            if (theme === "light") document.body.classList.add("light");
+            else if (theme === "dark") document.body.classList.add("dark");
+            else if (theme === "colorful") document.body.classList.add("colorful");
+        }
+
+        // Pause/Resume
+        function togglePause() {
+            isPaused = !isPaused;
+            pauseBtn.textContent = isPaused ? "▶️ Resume" : "⏸️ Pause";
+            saveGameState();
+        }
+
+        // Leaderboard
+        function getLeaderboard() {
+            const lb = localStorage.getItem("2048Leaderboard");
+            return lb ? JSON.parse(lb) : [];
+        }
+
+        function saveLeaderboard(lb) {
+            localStorage.setItem("2048Leaderboard", JSON.stringify(lb));
+        }
+
+        function addToLeaderboard(score) {
+            if (score <= 0) return;
+            let lb = getLeaderboard();
+            lb.push({ score, date: new Date().toLocaleString() });
+            lb.sort((a, b) => b.score - a.score);
+            if (lb.length > 5) lb = lb.slice(0, 5);
+            saveLeaderboard(lb);
+            renderLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            const lb = getLeaderboard();
+            leaderboardEl.innerHTML = "";
+            if (lb.length === 0) {
+                leaderboardEl.innerHTML = "<li>No scores yet</li>";
+                return;
+            }
+            lb.forEach((entry, i) => {
+                const li = document.createElement("li");
+                li.textContent = `${entry.score} points - ${entry.date}`;
+                leaderboardEl.appendChild(li);
+            });
+        }
+
+        // Rules modal
+        function showRules() {
+            document.getElementById('rules-modal').style.display = 'block';
+        }
+
+        function closeRules() {
+            document.getElementById('rules-modal').style.display = 'none';
+        }
+
+        window.addEventListener('click', function (e) {
+            const modal = document.getElementById('rules-modal');
+            if (e.target === modal) closeRules();
+        });
+
+        window.addEventListener("keydown", e => {
+            if (gameOverDiv.style.display === "block" || isPaused) return;
+            const k = e.key.replace("Arrow", "").toLowerCase();
+            if (["left", "right", "up", "down"].includes(k)) {
+                e.preventDefault();
+                move(k);
+            }
+        });
+
+        // Initialize
+        applyTheme(themeSelect.value);
+        createBoard();
+        loadGameState();
+        renderLeaderboard();
+
+    </script>
+</body>
+
+</html>

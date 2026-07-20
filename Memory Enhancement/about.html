@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About | BrainBoost</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6351eb;
+      --secondary: #514c9b;
+      --dark: #2d3436;
+      --light: #f5f6fa;
+      --accent: #00b894;
+      --text: #2d3436;
+      --text-light: #636e72;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #7eacf1 0%, #c3cfe2 100%);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: #333;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(243, 12, 12, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    
+    .logo h1 {
+      color: var(--primary);
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .logo i {
+      font-size: 2rem;
+      color: var(--primary);
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      position: relative;
+    }
+    
+    nav ul li a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: var(--primary);
+      transition: width 0.3s ease;
+    }
+
+    nav ul li a:hover,
+    nav ul li a.active {
+      color: var(--primary);
+    }
+    
+    nav ul li a:hover::after,
+    nav ul li a.active::after {
+      width: 60%;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 2.5rem;
+      background: linear-gradient(135deg, #f2ffb6 0%, #3682fc 100%);
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      flex: 1;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--primary);
+      font-size: 2.5rem;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    p {
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+      color: var(--text-light);
+    }
+    
+    .highlight {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    ul.features {
+      margin: 2rem 0;
+      padding-left: 1.5rem;
+    }
+    
+    ul.features li {
+      margin-bottom: 1.2rem;
+      position: relative;
+      padding-left: 2rem;
+      color: var(--text-light);
+    }
+    
+    ul.features li::before {
+      content: '\f00c';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+    
+    .cta {
+      text-align: center;
+      margin-top: 3rem;
+    }
+    
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      color: white;
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      background: var(--dark);
+      color: white;
+      margin-top: auto;
+    }
+    
+    footer p {
+      color: white;
+      margin: 0;
+    }
+    
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        padding: 1rem;
+      }
+      
+      nav ul {
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      main {
+        padding: 1.5rem;
+        margin: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <i class="fas fa-bolt"></i>
+      <h1>About</h1>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="memory.html">Memory</a></li>
+        <li><a href="music.html">Music</a></li>
+        <li><a href="math.html">Math</a></li>
+        <li><a class="active" href="about.html">About</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <h2>About Memory Enhancement</h2>
+    <p>
+      <span class="highlight">BrainBoost</span> is a cutting-edge web platform designed to enhance your cognitive abilities through engaging, scientifically-designed games and challenges. Our mission is to make brain training accessible, enjoyable, and effective for learners of all ages.
+    </p>
+    
+    <p>
+      Backed by neuroscience research, our exercises target key cognitive domains to help you:
+    </p>
+    
+    <ul class="features">
+      <li><strong>Improve memory retention</strong> and recall speed</li>
+      <li><strong>Enhance problem-solving</strong> and logical reasoning</li>
+      <li><strong>Boost concentration</strong> and mental focus</li>
+      <li><strong>Develop faster processing</strong> speed</li>
+      <li><strong>Strengthen multitasking</strong> abilities</li>
+    </ul>
+    
+    <h3>Our Featured Games</h3>
+    <ul class="features">
+      <li><strong>Memory Matrix</strong> – Challenge your working memory with increasingly complex patterns</li>
+      <li><strong>Rhythm Master</strong> – Improve auditory processing with musical pattern recognition</li>
+      <li><strong>Word Wizard</strong> – Expand your vocabulary through contextual puzzles</li>
+      <li><strong>Logic Labyrinth</strong> – Solve spatial reasoning challenges that adapt to your skill level</li>
+      <li><strong>Math Marathon</strong> – Speed up your mental calculations with timed challenges</li>
+    </ul>
+    
+    <p>
+      Whether you're a student preparing for exams, a professional looking to stay sharp, or simply someone who enjoys mental challenges, BrainBoost offers personalized training that adapts to your progress.
+    </p>
+    
+    <div class="cta">
+      <a href="index.html" class="cta-button">Start Training Now</a>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 BrainBoost. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
